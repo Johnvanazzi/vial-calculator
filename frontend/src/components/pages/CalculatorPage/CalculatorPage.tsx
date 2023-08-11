@@ -1,6 +1,6 @@
 import BasePanel from "../../ui/BasePanel/BasePanel";
 import CalculatorButton from "../../ui/CalculatorButton/CalculatorButton";
-import { ReactElement, useEffect, useState } from "react";
+import { ReactElement, useState } from "react";
 import "./CalculatorPage.scss";
 import CalculatorDisplay from "../../ui/CalculatorDisplay/CalculatorDisplay";
 import { CalculatorDisplayProps } from "../../ui/CalculatorDisplay/CalculatorDisplay.props";

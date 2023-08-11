@@ -2,7 +2,6 @@ import BaseButton from "../BaseButton/BaseButton";
 import React, { ReactElement, useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import "./NavBar.scss";
-import authApi from "../../../custom/AuthApi";
 
 export default function NavBar(): ReactElement {
     const navigate = useNavigate();
