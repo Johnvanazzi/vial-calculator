@@ -6,18 +6,18 @@
   box-sizing: border-box;
   display: flex;
   flex-direction: column;
-  padding: 1rem;
+  padding: 0.5rem;
   row-gap: $default-gap;
   text-align: right;
   width: 100%;
 
   .display-track {
     color: $default-text-color;
-    min-height: 1rem;
+    min-height: 1.5rem;
   }
 
   .display-current {
-    inline-size: 20rem;
+    min-height: 1.5rem;
     overflow-wrap: break-word;
   }
 

@@ -1,56 +1,130 @@
 import BasePanel from "../../ui/BasePanel/BasePanel";
 import CalculatorButton from "../../ui/CalculatorButton/CalculatorButton";
-import { ReactElement, useEffect, useState } from "react";
+import { ReactElement, useState } from "react";
 import "./CalculatorPage.scss";
 import CalculatorDisplay from "../../ui/CalculatorDisplay/CalculatorDisplay";
 import { CalculatorDisplayProps } from "../../ui/CalculatorDisplay/CalculatorDisplay.props";
 
-export default function CalculatorPage(): ReactElement {
+export default function CalculatorPage2(): ReactElement {
     const [history, setHistory] = useState<CalculatorDisplayProps[]>([]);
     const [displayHistory, setDisplayHistory] = useState<boolean>(true);
-    const [display, setDisplay] = useState<string>("");
-    const [displayTrack, setDisplayTrack] = useState<string>("");
-    const [memoryValue, setMemoryValue] = useState<string | undefined>(undefined);
-    const [value, setValue] = useState("");
-    const [previousValue, setPreviousValue] = useState("");
-    const [operation, setOperation] = useState<string | undefined>(undefined);
+    const [memoryValue, setMemoryValue] = useState<number | undefined>(undefined);
+    const [lastInteraction, setLastInteraction] = useState<"equality" | "number" | "operator" | "function">("operator");
+    const [currentOperator, setCurrentOperator] = useState("+");
+    const [display, setDisplay] = useState<string>("0");
+    const [previousValue, setPreviousValue] = useState<number>(0);
+    const [calculationTrack, setCalculationTrack] = useState<string>("");
+    const [pendingOperation, setPendingOperation] = useState({ value: 0, operator: "" });
 
-    function clear() {
-        setValue("");
-        setPreviousValue("");
-        setOperation(undefined);
-        setDisplayTrack("");
-        setDisplay("");
-    }
+    function handleNumber(s: string): void {
+        setLastInteraction("number");
 
-    function clearEntry() {
-        const newVal = value.slice(0, -1);
-        setValue(newVal);
-        setDisplay(newVal.toString());
-    }
-
-    function handleOperator(operator: string) {
-        if (value === "" || value === "NaN") {
+        if (lastInteraction === "equality") {
+            setCalculationTrack("");
+            setDisplay(s);
             return;
         }
 
-        if (previousValue !== "") {
-            const result = calculate();
-
-            if (result !== undefined) {
-                setValue("");
-                setPreviousValue(result);
-                setOperation(operator);
-                updateDisplay("", operator, result);
-
-                return;
-            }
+        if (lastInteraction === "operator" || lastInteraction === "function") {
+            setDisplay(s);
+            return;
         }
 
-        setOperation(operator);
-        setPreviousValue(value);
-        setValue("");
-        updateDisplay("", operator, value);
+        const newVal = display + s;
+        setDisplay(newVal);
+    }
+
+    function clearLast(): void {
+        if (display.length === 1) {
+            setLastInteraction("operator");
+            setDisplay("0");
+
+            return;
+        }
+
+        setDisplay((val) => val.substring(0, val.length - 1));
+    }
+
+    function clearAll(): void {
+        setPreviousValue(0);
+        setDisplay("0");
+        setCalculationTrack("");
+    }
+
+    function getResult(): void {
+        setLastInteraction("equality");
+        const newTrack = calculationTrack + display + " =";
+        const newVal = resolveOperation(previousValue, Number.parseFloat(display));
+
+        setCalculationTrack(newTrack);
+        setDisplay(newVal.toString());
+        setPreviousValue(newVal);
+        setHistory((array) => [{ current: newVal.toString(), track: newTrack }, ...array]);
+    }
+
+    function resolveOperation(x: number, y: number): number {
+        switch (currentOperator) {
+            case "+":
+                return x + y;
+            case "-":
+                return x - y;
+            case "*":
+                return x * y;
+            case "/":
+                return x / y;
+            case "%":
+                return x % y;
+            case "sqrt":
+                return Math.sqrt(x);
+            case "^":
+                return x ** y;
+            default:
+                throw new Error("Operation not supported");
+        }
+    }
+
+    function handleSquareRoot() {
+        setCurrentOperator("sqrt");
+        setCalculationTrack((track) => track + `sqrt(${display})`);
+        setDisplay((val) => resolveOperation(Number.parseFloat(val), 0).toString());
+        setLastInteraction("function");
+    }
+
+    function handleOperator(operator: string) {
+        setLastInteraction("operator");
+        setCurrentOperator(operator);
+
+        if (lastInteraction === "equality") {
+            setCalculationTrack(display + ` ${operator} `);
+
+            return;
+        }
+
+        if (lastInteraction === "operator") {
+            setCalculationTrack((val) => val.substring(0, val.lastIndexOf(currentOperator)).trim() + ` ${operator} `);
+
+            return;
+        }
+
+        if (lastInteraction === "function") {
+            setCalculationTrack((val) => val + ` ${operator} `);
+
+            return;
+        }
+
+        setCalculationTrack((val) => val + display + ` ${operator} `);
+
+        if (operator !== "-" && operator !== "+") {
+            setPendingOperation({ value: previousValue, operator: operator });
+
+            return;
+        }
+
+        const newVal = resolveOperation(previousValue, Number.parseFloat(display));
+        setDisplay(newVal.toString());
+        setPreviousValue(newVal);
+
+        return;
     }
 
     function handleMemoryClear(): void {
@@ -58,152 +132,39 @@ export default function CalculatorPage(): ReactElement {
     }
 
     function handleMemoryOperation(operation: (x: number, y: number) => number) {
-        if (value === "" || memoryValue === undefined) {
+        //setMemoryValue((val) => (val ? operation(currentValue, val) : currentValue));
+    }
+
+    function handleDecimalDot() {
+        if (display.includes(".")) {
             return;
         }
 
-        const newMemoryValue = operation(parseFloat(memoryValue), parseFloat(value)).toString();
-
-        setMemoryValue(newMemoryValue);
-    }
-
-    function handleNumber(number: string) {
-        if (value === "NaN") {
-            return;
-        }
-
-        if (number === "." && value.includes(".")) {
-            return;
-        }
-
-        const newOperand = value + number;
-        setValue(newOperand);
-        updateDisplay(newOperand, operation, previousValue);
-    }
-
-    function updateDisplay(value: string, operator: string | undefined, previousValue: string) {
-        setDisplay(value);
-
-        if (operator !== undefined) {
-            setDisplayTrack(operator === "sqrt" ? `${operator}(${previousValue})` : `${previousValue} ${operator}`);
-        }
-    }
-
-    function calculate(currentValue?: string): string | undefined {
-        const prev = parseFloat(previousValue);
-        const current = parseFloat(currentValue ?? value);
-
-        if (isNaN(prev) || isNaN(current)) {
-            return;
-        }
-
-        let result;
-        switch (operation) {
-            case "+":
-                result = prev + current;
-                break;
-            case "-":
-                result = prev - current;
-                break;
-            case "*":
-                result = prev * current;
-                break;
-            case "/":
-                result = prev / current;
-                break;
-            case "%":
-                result = prev % current;
-                break;
-            case "^":
-                result = prev ** current;
-                break;
-            default:
-                return;
-        }
-
-        return result.toString();
-    }
-
-    function getResult() {
-        const result = calculate();
-
-        if (result === undefined) {
-            return;
-        }
-
-        setValue(result);
-        setOperation(undefined);
-        setPreviousValue("");
-        updateDisplay(result, "", "");
-        setHistory((h) => [{ track: displayTrack + ` ${value} =`, current: result }, ...h]);
-    }
-
-    function handleMemoryStore() {
-        if (value !== "") {
-            setMemoryValue(value);
-        }
-    }
-
-    function handleSquareRoot() {
-        if (value === "") {
-            return;
-        }
-
-        const newValue = Math.sqrt(parseFloat(value)).toString();
-
-        if (operation !== undefined) {
-            const result = calculate(newValue);
-
-            if (result !== undefined) {
-                setValue(result);
-                setOperation(undefined);
-                updateDisplay(result, "", "");
-
-                return;
-            }
-        }
-
-        setValue(newValue);
-        setOperation(undefined);
-        updateDisplay(newValue, "sqrt", value);
-    }
-
-    function memoryRecall() {
-        if (memoryValue === undefined) {
-            return;
-        }
-
-        setValue(memoryValue);
-        setDisplay(memoryValue);
+        setDisplay((display) => display + ".");
     }
 
     return (
         <div className="calculator-wrapper">
             <BasePanel className="calculator-body">
-                <CalculatorDisplay current={display} track={displayTrack} />
+                <CalculatorDisplay current={display} track={calculationTrack} />
                 <div className="calculator-pads">
                     <div className="memory-pad">
                         <CalculatorButton buttonType="memory" onClick={handleMemoryClear}>
                             MC
                         </CalculatorButton>
-                        <CalculatorButton buttonType="memory" onClick={memoryRecall}>
-                            MR
-                        </CalculatorButton>
+                        <CalculatorButton buttonType="memory">MR</CalculatorButton>
                         <CalculatorButton buttonType="memory" onClick={() => handleMemoryOperation((x, y) => x + y)}>
                             M+
                         </CalculatorButton>
                         <CalculatorButton buttonType="memory" onClick={() => handleMemoryOperation((x, y) => x - y)}>
                             M-
                         </CalculatorButton>
-                        <CalculatorButton buttonType="memory" onClick={handleMemoryStore}>
-                            MS
-                        </CalculatorButton>
                     </div>
                     <div className="clear-pad">
-                        <CalculatorButton buttonType="number" onClick={clear}>
+                        <CalculatorButton buttonType="number" onClick={clearAll}>
                             C
                         </CalculatorButton>
-                        <CalculatorButton buttonType="number" onClick={clearEntry}>
+                        <CalculatorButton buttonType="number" onClick={clearLast}>
                             CE
                         </CalculatorButton>
                     </div>
@@ -212,19 +173,19 @@ export default function CalculatorPage(): ReactElement {
                             +
                         </CalculatorButton>
                         <CalculatorButton buttonType="operator" onClick={() => handleOperator("-")}>
-                            -
+                            &minus;
                         </CalculatorButton>
                         <CalculatorButton buttonType="operator" onClick={() => handleOperator("/")}>
-                            /
+                            &divide;
                         </CalculatorButton>
                         <CalculatorButton buttonType="operator" onClick={() => handleOperator("*")}>
-                            *
+                            &times;
                         </CalculatorButton>
                         <CalculatorButton buttonType="operator" onClick={() => handleOperator("%")}>
                             %
                         </CalculatorButton>
                         <CalculatorButton buttonType="operator" onClick={() => handleSquareRoot()}>
-                            sqrt
+                            &radic;
                         </CalculatorButton>
                         <CalculatorButton buttonType="operator" onClick={() => handleOperator("^")}>
                             ^
@@ -264,7 +225,7 @@ export default function CalculatorPage(): ReactElement {
                         <CalculatorButton buttonType="number" onClick={() => handleNumber("0")}>
                             0
                         </CalculatorButton>
-                        <CalculatorButton buttonType="number" onClick={() => handleNumber(".")}>
+                        <CalculatorButton buttonType="number" onClick={() => handleDecimalDot()}>
                             .
                         </CalculatorButton>
                     </div>
