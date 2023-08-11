@@ -1,0 +1,5 @@
+@mixin default-font($weight: normal) {
+  font-style: normal;
+  font-family: Verdana, sans-serif;
+  font-weight: $weight;
+}

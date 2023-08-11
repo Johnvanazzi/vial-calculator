@@ -1,0 +1,36 @@
+@import "styles/layouts";
+@import "styles/colors";
+
+.auth-page {
+  display: flex;
+  flex-direction: column;
+  row-gap: 1rem;
+  width: 30rem;
+
+  form {
+    display: flex;
+    flex-direction: column;
+    row-gap: 1rem;
+
+    .form-field {
+      display: flex;
+      flex-direction: column;
+      row-gap: 0.5rem;
+    }
+  }
+
+  .api-error {
+    color: $default-error-color;
+  }
+
+  .panel-footer-buttons {
+    column-gap: 0.5rem;
+    display: flex;
+    flex-direction: row;
+    margin-top: 1.5rem;
+  }
+
+  @include mobile() {
+    width: 100%;
+  }
+}

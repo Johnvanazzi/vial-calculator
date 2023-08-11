@@ -1,0 +1,31 @@
+$navbar-height: 5rem;
+$default-gap: 1rem;
+
+@mixin mobile() {
+  @media screen and ($mobile-tablet-width-threshold >= width) {
+    @content;
+  }
+}
+
+$mobile-app-padding: 1rem;
+$mobile-border-radius: 0.5rem;
+$mobile-tablet-width-threshold: 37.5rem;
+
+@mixin tablet() {
+  @media screen and ($mobile-tablet-width-threshold < width <= $tablet-monitor-width-threshold) {
+    @content;
+  }
+}
+
+$tablet-app-padding: 1.5rem 2rem;
+$tablet-border-radius: 0.625rem;
+$tablet-monitor-width-threshold: 62.5rem;
+
+@mixin monitor() {
+  @media screen and ($tablet-monitor-width-threshold < width) {
+    @content;
+  }
+}
+
+$monitor-app-padding: 3rem;
+$monitor-border-radius: 0.625rem;

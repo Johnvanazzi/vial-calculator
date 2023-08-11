@@ -1,0 +1,39 @@
+@import "styles/colors";
+@import "styles/layouts";
+
+.calculator-display {
+  border: 4px solid $default-border-color;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  padding: 1rem;
+  row-gap: $default-gap;
+  text-align: right;
+  width: 100%;
+
+  .display-track {
+    color: $default-text-color;
+    min-height: 1rem;
+  }
+
+  .display-current {
+    inline-size: 20rem;
+    overflow-wrap: break-word;
+  }
+
+  @include mobile() {
+    border-radius: $mobile-border-radius;
+
+    .display-current {
+      inline-size: 100%;
+    }
+  }
+
+  @include tablet() {
+    border-radius: $tablet-border-radius;
+  }
+
+  @include monitor() {
+    border-radius: $monitor-border-radius;
+  }
+}

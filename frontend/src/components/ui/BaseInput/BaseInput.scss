@@ -1,0 +1,40 @@
+@import "styles/colors";
+@import "styles/layouts";
+@import "styles/fonts";
+
+.base-input {
+  @include default-font();
+
+  input {
+    border: 2px solid $default-border-color;
+    box-sizing: border-box;
+    height: 60px;
+    padding: 0 1rem;
+    width: 100%;
+  }
+
+  &.invalid {
+    border-color: $default-error-color;
+  }
+
+  .input-errors {
+    margin-top: 0.5rem;
+    display: flex;
+
+    .input-error-item {
+      color: $default-error-color;
+    }
+  }
+
+  @include mobile() {
+    border-radius: $mobile-border-radius;
+  }
+
+  @include tablet() {
+    border-radius: $tablet-border-radius;
+  }
+
+  @include monitor() {
+    border-radius: $monitor-border-radius;
+  }
+}

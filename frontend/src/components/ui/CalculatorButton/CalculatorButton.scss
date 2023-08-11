@@ -1,0 +1,36 @@
+@import "styles/fonts";
+@import "styles/layouts";
+
+.calculator-button {
+  @include default-font(bold);
+  background-color: #616161;
+  height: 2rem;
+  text-align: center;
+  min-width: 3rem;
+  width: 100%;
+
+  &.operator {
+    color: goldenrod;
+  }
+
+  &.memory {
+    color: dodgerblue;
+  }
+
+  &.number {
+    color: #eeeeee;
+  }
+
+  @include mobile() {
+    border-radius: $mobile-border-radius;
+    min-width: 1rem;
+  }
+
+  @include tablet() {
+    border-radius: $tablet-border-radius;
+  }
+
+  @include monitor() {
+    border-radius: $monitor-border-radius;
+  }
+}

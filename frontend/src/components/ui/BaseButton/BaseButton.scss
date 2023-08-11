@@ -1,0 +1,50 @@
+@import "styles/colors";
+@import "styles/fonts";
+@import "styles/layouts";
+
+.base-button {
+  @include default-font(500);
+  align-items: center;
+  border: 2px solid $default-header-color;
+  border-radius: $mobile-border-radius;
+  color: $background-panel-color;
+  cursor: pointer;
+  display: flex;
+  font-size: 16px;
+  justify-content: center;
+  width: 100%;
+
+  &.primary {
+    background-color: $default-header-color;
+    color: $background-panel-color;
+  }
+
+  &.secondary {
+    background-color: $background-panel-color;
+    border-color: $background-app-color;
+    color: $default-header-color;
+  }
+
+  &:disabled {
+    background-color: $background-panel-color;
+    border-color: $default-border-color;
+    cursor: default;
+
+    .button-text {
+      color: $default-border-color;
+    }
+  }
+
+  @include mobile() {
+    height: 2.75rem;
+    font-size: 14px;
+  }
+
+  @include tablet() {
+    height: 3.25rem;
+  }
+
+  @include monitor() {
+    height: 3.75rem;
+  }
+}

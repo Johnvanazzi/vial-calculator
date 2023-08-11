@@ -1,0 +1,30 @@
+{
+  "trailingComma": "es5",
+  "tabWidth": 4,
+  "semi": true,
+  "singleQuote": false,
+  "printWidth": 120,
+  "endOfLine": "crlf",
+  "overrides": [
+    {
+      "files": ["*.tsx", "*.ts"],
+      "options": {
+        "arrowParens": "always",
+        "semi": true,
+        "bracketSameLine": true
+      }
+    },
+    {
+      "files": ["*.scss"],
+      "options": {
+        "tabWidth": 2
+      }
+    },
+    {
+      "files": ["*.json"],
+      "options": {
+        "tabWidth": 2
+      }
+    }
+  ]
+}

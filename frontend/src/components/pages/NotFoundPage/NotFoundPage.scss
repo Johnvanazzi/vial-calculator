@@ -1,0 +1,17 @@
+@import "styles/layouts";
+
+.not-found-page {
+  align-items: center;
+  column-gap: $default-gap;
+  display: flex;
+  flex-direction: column;
+  margin: 2rem auto;
+  text-align: center;
+  width: 50%;
+
+  .base-button {
+    margin-top: 2rem;
+    min-width: 10rem;
+    width: 50%;
+  }
+}

@@ -1,0 +1,30 @@
+@import "styles/layouts";
+@import "styles/colors";
+
+.base-panel {
+  background-color: $background-panel-color;
+  box-shadow: rgba($default-header-color, 0.2) 0 0 15px;
+  box-sizing: border-box;
+  display: flex;
+}
+
+@include mobile() {
+  .base-panel {
+    border-radius: $mobile-border-radius;
+    padding: 0.75rem;
+  }
+}
+
+@include tablet() {
+  .base-panel {
+    border-radius: $tablet-border-radius;
+    padding: 1rem;
+  }
+}
+
+@include monitor() {
+  .base-panel {
+    border-radius: $monitor-border-radius;
+    padding: 1.5rem;
+  }
+}

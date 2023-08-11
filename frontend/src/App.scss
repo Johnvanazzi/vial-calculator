@@ -1,0 +1,32 @@
+@import "styles/layouts";
+@import "styles/colors";
+
+#app {
+  align-items: flex-start;
+  background-color: $background-app-color;
+  box-sizing: border-box;
+  min-height: 100%;
+  position: absolute;
+  width: 100%;
+
+  .page-wrapper {
+    display: flex;
+    justify-content: center;
+    box-sizing: border-box;
+    position: relative;
+    margin-top: 6rem;
+    width: 100%;
+  }
+
+  @include mobile() {
+    padding: $mobile-app-padding;
+  }
+
+  @include tablet() {
+    padding: $tablet-app-padding;
+  }
+
+  @include monitor() {
+    padding: $monitor-app-padding;
+  }
+}
